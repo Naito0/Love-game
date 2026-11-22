@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#ffd6e0">
+  <title>Tengo una pregunta 💌</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+  <style>
+    :root {
+      --rosa: #ff4d79;
+      --rosa-oscuro: #e0315f;
+      --fondo1: #ffd6e0;
+      --fondo2: #ffe9f0;
+      --texto: #5a1a2c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      background: linear-gradient(160deg, var(--fondo1), var(--fondo2));
+      color: var(--texto);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 16px;
+    }
+
+    /* Corazones flotando de fondo */
+    .corazon-fondo {
+      position: fixed;
+      bottom: -40px;
+      font-size: 22px;
+      opacity: .55;
+      pointer-events: none;
+      animation: subir linear forwards;
+      z-index: 0;
+    }
+    @keyframes subir {
+      to { transform: translateY(-115dvh) rotate(25deg); opacity: 0; }
+    }
+
+    .tarjeta {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, .85);
+      border-radius: 24px;
+      padding: 32px 22px 36px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(255, 77, 121, .25);
+    }
+    .emoji-grande {
+      font-size: 84px;
+      line-height: 1;
+      display: inline-block;
+      animation: latido 1.2s infinite;
+    }
+    @keyframes latido {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+    }
+    h1 {
+      font-size: clamp(22px, 6.5vw, 30px);
+      margin: 18px 0 8px;
+    }
+    p.sub {
+      font-size: 16px;
+      opacity: .8;
+      margin-bottom: 28px;
+      min-height: 1.4em;
+    }
+
+    .botones {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      min-height: 70px;
+    }
+    button {
+      font: inherit;
+      font-weight: 700;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      padding: 14px 34px;
+      font-size: 18px;
+      transition: transform .15s ease, background .2s;
+    }
+    #btnSi {
+      background: var(--rosa);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(255, 77, 121, .45);
+      transform-origin: center;
+    }
+    #btnSi:active { background: var(--rosa-oscuro); }
+    #btnNo {
+      background: #fff;
+      color: var(--rosa);
+      border: 2px solid var(--rosa);
+      z-index: 10;
+      white-space: nowrap;
+    }
+    #btnNo.suelto {
+      position: fixed;
+      transition: left .25s ease, top .25s ease;
+    }
+
+    /* Pantalla final */
+    #final { display: none; }
+    #final h1 { font-size: clamp(26px, 8vw, 36px); }
+    .confeti {
+      position: fixed;
+      top: -30px;
+      font-size: 26px;
+      pointer-events: none;
+      animation: caer linear forwards;
+      z-index: 20;
+    }
+    @keyframes caer {
+      to { transform: translateY(115dvh) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pregunta -->
+  <div class="tarjeta" id="pregunta">
+    <div class="emoji-grande" id="emoji">🥺</div>
+    <h1 id="titulo">¿Quieres ser mi novia?</h1>
+    <p class="sub" id="sub">Piénsalo bien... 💭</p>
+    <div class="botones" id="zona">
+      <button id="btnSi">Sí 💖</button>
+      <button id="btnNo">No 😢</button>
+    </div>
+  </div>
+
+  <!-- Respuesta -->
+  <div class="tarjeta" id="final">
+    <div class="emoji-grande">🥰</div>
+    <h1>¡Sabía que dirías que sí!</h1>
+    <p class="sub">Te quiero muchísimo 💕</p>
+  </div>
+
+  <script>
+    // ====== PERSONALIZA AQUÍ ======
+    const PREGUNTA = "¿Quieres ser mi novia?";
+    const MENSAJE_FINAL = "¡Sabía que dirías que sí!";
+    const SUBMENSAJE_FINAL = "Te quiero muchísimo 💕";
+    // ==============================
+
+    document.getElementById("titulo").textContent = PREGUNTA;
+    document.querySelector("#final h1").textContent = MENSAJE_FINAL;
+    document.querySelector("#final .sub").textContent = SUBMENSAJE_FINAL;
+
+    const btnSi = document.getElementById("btnSi");
+    const btnNo = document.getElementById("btnNo");
+    const sub = document.getElementById("sub");
+    const emoji = document.getElementById("emoji");
+
+    const frasesNo = [
+      "No 😢", "¿Segura? 🤨", "¿Muy segura? 😟", "Piénsalo otra vez 🥺",
+      "¡No me hagas esto! 😭", "Ya no te queda opción 😏", "Atrápame si puedes 😜",
+      "Mejor dale al Sí 💘"
+    ];
+    const frasesSub = [
+      "Piénsalo bien... 💭", "Ese botón no funciona 🙈", "Inténtalo otra vez, jeje 😝",
+      "El Sí te está esperando 👀", "Cada vez es más fácil decir que sí 💕"
+    ];
+    const emojis = ["🥺", "😳", "😢", "😭", "🙏", "😏"];
+
+    let intentos = 0;
+    let escalaSi = 1;
+
+    function huir() {
+      intentos++;
+
+      // Cambia textos
+      btnNo.textContent = frasesNo[intentos % frasesNo.length];
+      sub.textContent = frasesSub[intentos % frasesSub.length];
+      emoji.textContent = emojis[intentos % emojis.length];
+
+      // El "Sí" crece un poco (con límite)
+      escalaSi = Math.min(escalaSi + 0.12, 2.2);
+      btnSi.style.transform = `scale(${escalaSi})`;
+
+      // Suelta el botón "No" para que se mueva por toda la pantalla
+      if (!btnNo.classList.contains("suelto")) {
+        const r = btnNo.getBoundingClientRect();
+        btnNo.style.left = r.left + "px";
+        btnNo.style.top = r.top + "px";
+        btnNo.classList.add("suelto");
+      }
+
+      moverNo();
+    }
+
+    function moverNo() {
+      const anchoV = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const altoV = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      const b = btnNo.getBoundingClientRect();
+      const si = btnSi.getBoundingClientRect();
+      const margen = 12;
+
+      const maxX = Math.max(margen, anchoV - b.width - margen);
+      const maxY = Math.max(margen, altoV - b.height - margen);
+
+      // Busca una posición que no tape el "Sí" y que esté lejos de la actual
+      let x, y, intentosPos = 0;
+      do {
+        x = margen + Math.random() * (maxX - margen);
+        y = margen + Math.random() * (maxY - margen);
+        intentosPos++;
+      } while (
+        intentosPos < 40 &&
+        (seSolapa(x, y, b.width, b.height, si, 20) ||
+         Math.hypot(x - b.left, y - b.top) < 120)
+      );
+
+      btnNo.style.left = x + "px";
+      btnNo.style.top = y + "px";
+    }
+
+    function seSolapa(x, y, w, h, r, extra) {
+      return !(x + w < r.left - extra || x > r.right + extra ||
+               y + h < r.top - extra || y > r.bottom + extra);
+    }
+
+    // Móvil: en cuanto el dedo lo toca, se escapa y se cancela el click
+    btnNo.addEventListener("touchstart", (e) => { e.preventDefault(); huir(); }, { passive: false });
+    // Puntero / ratón
+    btnNo.addEventListener("pointerdown", (e) => { e.preventDefault(); huir(); });
+    btnNo.addEventListener("mouseenter", huir);
+    // Por si algún click llegara a pasar, tampoco hace nada
+    btnNo.addEventListener("click", (e) => { e.preventDefault(); huir(); });
+
+    // En PC: si el ratón se acerca mucho, también huye
+    document.addEventListener("mousemove", (e) => {
+      if (!btnNo.classList.contains("suelto")) return;
+      const b = btnNo.getBoundingClientRect();
+      const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+      if (Math.hypot(e.clientX - cx, e.clientY - cy) < 90) huir();
+    });
+
+    // Si giran el teléfono, lo devuelve a la pantalla
+    window.addEventListener("resize", () => {
+      if (btnNo.classList.contains("suelto")) moverNo();
+    });
+
+    // ¡El Sí!
+    btnSi.addEventListener("click", () => {
+      document.getElementById("pregunta").style.display = "none";
+      btnNo.style.display = "none";
+      document.getElementById("final").style.display = "block";
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      lluviaConfeti();
+    });
+
+    function lluviaConfeti() {
+      const items = ["💖", "💕", "💘", "🌹", "✨", "💗", "🥰"];
+      let n = 0;
+      const t = setInterval(() => {
+        for (let i = 0; i < 4; i++) {
+          const c = document.createElement("div");
+          c.className = "confeti";
+          c.textContent = items[Math.floor(Math.random() * items.length)];
+          c.style.left = Math.random() * 100 + "vw";
+          c.style.animationDuration = 2.5 + Math.random() * 2.5 + "s";
+          document.body.appendChild(c);
+          setTimeout(() => c.remove(), 5200);
+        }
+        if (++n > 40) clearInterval(t);
+      }, 120);
+    }
+
+    // Corazones de fondo
+    setInterval(() => {
+      const h = document.createElement("div");
+      h.className = "corazon-fondo";
+      h.textContent = Math.random() > .5 ? "💗" : "💕";
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.fontSize = 14 + Math.random() * 20 + "px";
+      h.style.animationDuration = 6 + Math.random() * 5 + "s";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 11500);
+    }, 700);
+  </script>
+</body>
+</html>
