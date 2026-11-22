@@ -241,7 +241,10 @@
     // Móvil: en cuanto el dedo lo toca, se escapa y se cancela el click
     btnNo.addEventListener("touchstart", (e) => { e.preventDefault(); huir(); }, { passive: false });
     // Puntero / ratón
-    btnNo.addEventListener("pointerdown", (e) => { e.preventDefault(); huir(); });
+    btnNo.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "touch") return; // en móvil ya lo maneja touchstart
+      e.preventDefault(); huir();
+    });
     btnNo.addEventListener("mouseenter", huir);
     // Por si algún click llegara a pasar, tampoco hace nada
     btnNo.addEventListener("click", (e) => { e.preventDefault(); huir(); });
