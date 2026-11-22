@@ -99,7 +99,7 @@ function medir() {
   CY = H / 2 + 30;
   RX = W / 2 - 26;
   RY = H / 2 - 100;
-  if (RY > RX * 1.35) RY = RX * 1.35;
+  if (RY > RX * 1.55) RY = RX * 1.55;
   if (RY < RX * 0.45) RX = RY / 0.45;
   BASE = Math.min(RX, RY);
 
@@ -263,8 +263,10 @@ function tocar(id, nombre, emoji, x, y) {
   abrirCarta(emoji, nombre, FRASES[id]);
 }
 
+let abiertaDesde = 0;
 function abrirCarta(emoji, titulo, frase) {
   abierta = true;
+  abiertaDesde = performance.now();
   document.body.classList.add("abierta");
   cartaEmoji.textContent = emoji;
   cartaTitulo.textContent = titulo;
@@ -285,6 +287,9 @@ function escribir(texto) {
 }
 
 function cerrarCarta() {
+  // En celular, el "click" del mismo toque que abrió la carta cae sobre el velo:
+  // se ignora durante el primer medio segundo para que no se cierre sola.
+  if (performance.now() - abiertaDesde < 500) return;
   abierta = false;
   document.body.classList.remove("abierta");
 
