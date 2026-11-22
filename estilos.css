@@ -1,0 +1,289 @@
+/* ===== Base ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  font-family: "Quicksand", system-ui, sans-serif;
+  color: #f3eaff;
+  /* Nebulosa de colores */
+  background:
+    radial-gradient(ellipse at 15% 25%, rgba(140, 50, 190, .35), transparent 45%),
+    radial-gradient(ellipse at 85% 75%, rgba(30, 90, 200, .35), transparent 50%),
+    radial-gradient(ellipse at 50% 110%, rgba(220, 60, 140, .28), transparent 55%),
+    radial-gradient(ellipse at 90% 10%, rgba(60, 200, 220, .15), transparent 40%),
+    #05030f;
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+#cielo { z-index: 0; }
+#orbitas { z-index: 1; }
+
+#universo {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+}
+
+/* ===== Encabezado ===== */
+#encabezado {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  left: 0;
+  right: 0;
+  z-index: 20;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 16px;
+}
+#encabezado h1 {
+  font-family: "Dancing Script", cursive;
+  font-size: clamp(30px, 8vw, 46px);
+  font-weight: 700;
+  background: linear-gradient(90deg, #ffd1f0, #c9a7ff, #9fd8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgba(200, 150, 255, .5));
+}
+#pista {
+  font-size: 13px;
+  opacity: .8;
+  margin-top: 2px;
+}
+#contador {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .15);
+}
+
+/* ===== Astros (botones que se mueven) ===== */
+.astro {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--hit);
+  height: var(--hit);
+  margin-left: calc(var(--hit) / -2);
+  margin-top: calc(var(--hit) / -2);
+  border: none;
+  background: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  will-change: transform;
+}
+.visual {
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  position: relative;
+  transition: transform .2s;
+}
+.astro:active .visual { transform: scale(1.2); }
+
+/* Sombra para que parezcan esferas */
+.planeta .visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, transparent 35%, rgba(0, 0, 0, .65) 100%);
+}
+
+/* Los ya descubiertos tienen un brillo suave */
+.astro.visto .visual { box-shadow: 0 0 calc(var(--s) * .5) rgba(255, 190, 240, .55); }
+
+.sol .visual {
+  background: radial-gradient(circle at 40% 40%, #fffbe0, #ffd84d 30%, #ffa21f 65%, #ff6a00);
+  box-shadow:
+    0 0 30px 10px rgba(255, 180, 40, .6),
+    0 0 90px 35px rgba(255, 120, 0, .25);
+  animation: latirSol 4s ease-in-out infinite;
+}
+@keyframes latirSol {
+  50% { box-shadow: 0 0 40px 16px rgba(255, 190, 60, .75), 0 0 120px 50px rgba(255, 120, 0, .3); }
+}
+
+.mercurio .visual { background: radial-gradient(circle at 35% 35%, #e3ded9, #8f8780 70%, #5c5650); }
+.venus .visual    { background: radial-gradient(circle at 35% 35%, #fff3d0, #e8b96a 55%, #b07a33); }
+.tierra .visual {
+  background:
+    radial-gradient(circle at 30% 40%, #3fae5a 0 14%, transparent 15%),
+    radial-gradient(circle at 65% 30%, #4cbf63 0 12%, transparent 13%),
+    radial-gradient(circle at 55% 70%, #3aa352 0 16%, transparent 17%),
+    radial-gradient(circle at 35% 35%, #a8e6ff, #2f8ee0 40%, #1d5fb0 70%, #0d2f66);
+  box-shadow: 0 0 10px rgba(90, 170, 255, .6);
+}
+.luna .visual {
+  background:
+    radial-gradient(circle at 60% 40%, #9a9a9a 0 10%, transparent 11%),
+    radial-gradient(circle at 35% 65%, #a5a5a5 0 13%, transparent 14%),
+    radial-gradient(circle at 35% 35%, #ffffff, #cfcfcf 50%, #8a8a8a);
+  box-shadow: 0 0 10px rgba(255, 255, 255, .5);
+}
+.marte .visual { background: radial-gradient(circle at 35% 35%, #ffb594, #d4542a 55%, #7a2610); }
+.jupiter .visual {
+  background: linear-gradient(172deg,
+    #f2dcbc 0 12%, #c9925e 12% 22%, #ecd2ad 22% 34%, #b8774a 34% 44%,
+    #f0d8b4 44% 56%, #c58a56 56% 64%, #e9cda6 64% 78%, #b07247 78% 88%, #e6c9a0 88%);
+}
+.saturno .visual { background: radial-gradient(circle at 35% 35%, #fff0c4, #dcb86e 55%, #9c7a3c); }
+.saturno .visual::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 230%;
+  height: 70%;
+  border-radius: 50%;
+  border: calc(var(--s) * .13) solid rgba(232, 205, 150, .75);
+  transform: translate(-50%, -50%) rotate(-18deg);
+  box-shadow: 0 0 6px rgba(255, 230, 170, .4);
+}
+
+/* Galaxia en espiral */
+.galaxia .visual {
+  background:
+    radial-gradient(circle, #fff 0 5%, rgba(255, 225, 255, .9) 9%, transparent 32%),
+    conic-gradient(from 0deg,
+      transparent 0deg, rgba(190, 120, 255, .65) 40deg, transparent 90deg,
+      rgba(110, 180, 255, .65) 130deg, transparent 180deg,
+      rgba(255, 120, 200, .65) 220deg, transparent 270deg,
+      rgba(170, 130, 255, .65) 310deg, transparent 360deg);
+  -webkit-mask: radial-gradient(circle, #000 35%, transparent 70%);
+  mask: radial-gradient(circle, #000 35%, transparent 70%);
+  animation: girar 18s linear infinite;
+}
+.galaxia { transform-style: preserve-3d; }
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ===== Estrella fugaz ===== */
+.fugaz {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 70px;
+  height: 70px;
+  margin: -35px 0 0 -35px;
+  border: none;
+  background: none;
+  z-index: 8;
+  cursor: pointer;
+}
+.fugaz::before { /* cola */
+  content: "";
+  position: absolute;
+  right: 50%;
+  top: 50%;
+  width: 130px;
+  height: 2px;
+  background: linear-gradient(to left, rgba(255, 255, 255, .95), rgba(180, 200, 255, .4) 40%, transparent);
+  transform-origin: right center;
+  transform: translateY(-50%) rotate(var(--ang));
+  border-radius: 2px;
+}
+.fugaz::after { /* cabeza */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px 3px rgba(255, 255, 255, .9), 0 0 18px 6px rgba(160, 190, 255, .6);
+}
+
+/* ===== Corazones que salen al tocar ===== */
+.chispa {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  font-size: 18px;
+  animation: chispa .9s ease-out forwards;
+}
+@keyframes chispa {
+  from { transform: translate(-50%, -50%) scale(.4); opacity: 1; }
+  to   { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1); opacity: 0; }
+}
+
+/* ===== Ventana de la frase ===== */
+#velo {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(5, 3, 15, .55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+#carta {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  width: min(92vw, 420px);
+  z-index: 31;
+  text-align: center;
+  padding: 26px 22px 22px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, rgba(60, 30, 100, .92), rgba(25, 15, 55, .95));
+  border: 1px solid rgba(255, 200, 255, .25);
+  box-shadow: 0 0 40px rgba(180, 120, 255, .35);
+  transform: translate(-50%, 130%);
+  transition: transform .45s cubic-bezier(.2, .9, .3, 1.2);
+}
+body.abierta #velo { opacity: 1; pointer-events: auto; }
+body.abierta #carta { transform: translate(-50%, 0); }
+
+#cartaEmoji { font-size: 46px; line-height: 1; }
+#cartaTitulo {
+  font-size: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: .75;
+  margin: 8px 0 10px;
+}
+#cartaFrase {
+  font-family: "Dancing Script", cursive;
+  font-size: clamp(24px, 6.8vw, 30px);
+  line-height: 1.25;
+  min-height: 2.6em;
+  color: #ffe3f6;
+  text-shadow: 0 0 12px rgba(255, 150, 220, .5);
+}
+#cartaCerrar {
+  margin-top: 18px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 11px 26px;
+  background: linear-gradient(90deg, #c45bff, #ff5fa8);
+  box-shadow: 0 6px 18px rgba(255, 95, 168, .4);
+  cursor: pointer;
+}
+#cartaCerrar:active { transform: scale(.96); }
